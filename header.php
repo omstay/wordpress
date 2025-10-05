@@ -23,29 +23,47 @@
                 <?php endif; ?>
             </div>
             
-            <nav class="main-navigation">
-                <button class="mobile-menu-toggle" aria-label="Menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                
-                <?php
-                wp_nav_menu(array(
-                    'theme_location' => 'primary',
-                    'container' => false,
-                    'menu_class' => 'nav-menu',
-                    'fallback_cb' => function() {
-                        echo '<ul class="nav-menu">';
-                        echo '<li><a href="' . home_url('/') . '">Home</a></li>';
-                        echo '<li><a href="' . home_url('/about') . '">About Us</a></li>';
-                        echo '<li><a href="' . home_url('/properties') . '">Featured Listings</a></li>';
-                        echo '<li><a href="' . home_url('/contact') . '">Contact</a></li>';
-                        echo '</ul>';
-                    }
-                ));
-                ?>
-            </nav>
+           <nav class="main-navigation">
+    <button class="mobile-menu-toggle" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+    
+    <?php
+    if (has_nav_menu('primary')) {
+        wp_nav_menu(array(
+            'theme_location' => 'primary',
+            'container' => false,
+            'menu_class' => 'nav-menu'
+        ));
+    } else {
+        // Fallback menu with better page detection
+        echo '<ul class="nav-menu">';
+        echo '<li><a href="' . esc_url(home_url('/')) . '">Home</a></li>';
+        
+        // Check if About page exists
+        $about_page = get_page_by_path('about');
+        if ($about_page) {
+            echo '<li><a href="' . get_permalink($about_page->ID) . '">About Us</a></li>';
+        }
+        
+        // Link to property archive
+        $property_archive = get_post_type_archive_link('property');
+        if ($property_archive) {
+            echo '<li><a href="' . esc_url($property_archive) . '">Featured Listings</a></li>';
+        }
+        
+        // Check if Contact page exists
+        $contact_page = get_page_by_path('contact');
+        if ($contact_page) {
+            echo '<li><a href="' . get_permalink($contact_page->ID) . '">Contact</a></li>';
+        }
+        
+        echo '</ul>';
+    }
+    ?>
+</nav>
         </div>
     </div>
 </header>
